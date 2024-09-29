@@ -4,11 +4,12 @@
 #define TRIG_PIN 6
 #define ECHO_PIN 9
 #define MOTOR_PIN 8
-
+#define VELOCITY 1
 #define DISTANCE_BOUND 30
 
-float velocity = 1.0;
-double duration, radius, volume; 
+double duration, radius, volume, height; 
+int timeMoved = 0;
+static float currentDistance = 0;
 const int rs = 12, en = 11, d4 = 5, d5 = 4, d6 = 3, d7 = 2;
 LiquidCrystal lcd(rs, en, d4, d5, d6, d7);
 
@@ -23,7 +24,7 @@ void ultrasonicSensorSetup(unsigned int triggerPin) {
   delayMicroseconds(10);
   digitalWrite(TRIG_PIN, LOW);
 }
- 
+
 void setup() {
 
   //Initialize LCD screen/serial monitor
@@ -47,23 +48,45 @@ void loop() {
   lcd.setCursor(0, 1);
   ultrasonicSensorSetup(TRIG_PIN);
 
-  //Radius output
+  //Radius compute
   duration = pulseIn(ECHO_PIN, HIGH);
   if (getDistance(duration) <= 30 && getDistance(duration) >= 0) {
     radius = (DISTANCE_BOUND - getDistance(duration)) / 2;
   }
 
-  //Activate motor for pulley sonar system
-  digitalWrite(MOTOR_PIN, 160);
-
   //Radius output
   lcd.print("Radius: ");
   lcd.print(radius);
-  delay(200);
+  delay(2000);
+  lcd.clear();
+
+  //Height compute 
+  while (getDistance(duration) <= 30 && getDistance(duration) >= 0) {
+    ultrasonicSensorSetup(TRIG_PIN);
+    duration = pulseIn(ECHO_PIN, HIGH);
+    currentDistance = getDistance(duration);
+
+    if (currentDistance <= 30 && currentDistance >= 0) {
+      ++timeMoved;
+      delay(1000);
+    } 
+
+    else {
+      height = timeMoved * VELOCITY;
+      // LCD Output
+      lcd.setCursor(0, 1);  
+      lcd.print("Height: ");
+      lcd.print(height);
+      timeMoved = 0;
+      break;
+    }
+  }
+  delay(2000);
 
   //Volume output
   lcd.clear();
-  volume = (M_PI * pow(radius, 2) * 2);
+  volume = (M_PI * pow(radius, 2) * height);
   lcd.print("Volume: ");
   lcd.print(volume);
+  delay(5000);
 }
