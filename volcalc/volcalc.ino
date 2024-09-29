@@ -1,12 +1,14 @@
 #include <LiquidCrystal.h>
 #include <math.h>
 
-#define TRIG_PIN 9
-#define ECHO_PIN 10
+#define TRIG_PIN 6
+#define ECHO_PIN 9
+#define MOTOR_PIN 8
+
 #define DISTANCE_BOUND 30
 
+float velocity = 1.0;
 double duration, radius, volume; 
-double height = 0;
 const int rs = 12, en = 11, d4 = 5, d5 = 4, d6 = 3, d7 = 2;
 LiquidCrystal lcd(rs, en, d4, d5, d6, d7);
 
@@ -14,15 +16,24 @@ double getDistance(double duration) {
   return (duration * 0.0343)/2;
 }
 
+void ultrasonicSensorSetup(unsigned int triggerPin) {
+  digitalWrite(TRIG_PIN, LOW);
+  delayMicroseconds(2);
+  digitalWrite(TRIG_PIN, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(TRIG_PIN, LOW);
+}
+ 
 void setup() {
 
   //Initialize LCD screen/serial monitor
   lcd.begin(16, 2);
   Serial.begin(9600);
 
-  //Initialize ultrasonic sensor
+  //Initialize components
   pinMode(TRIG_PIN, OUTPUT);
   pinMode(ECHO_PIN, INPUT);
+ // pinMode(motorPin, OUTPUT);
 
   //Start serial monitor/LCD dialogue
   Serial.print("VOLCALC");
@@ -34,22 +45,21 @@ void setup() {
 void loop() {
   //LCD update
   lcd.setCursor(0, 1);
+  ultrasonicSensorSetup(TRIG_PIN);
 
-  //US sensor capture
-  digitalWrite(TRIG_PIN, LOW);
-  delayMicroseconds(2);
-  digitalWrite(TRIG_PIN, HIGH);
-  delayMicroseconds(10);
-  digitalWrite(TRIG_PIN, LOW);
-  
   //Radius output
   duration = pulseIn(ECHO_PIN, HIGH);
-  radius = (DISTANCE_BOUND - getDistance(duration)) / 2;
-  Serial.println(getDistance(duration));
-  Serial.println(radius);
+  if (getDistance(duration) <= 30 && getDistance(duration) >= 0) {
+    radius = (DISTANCE_BOUND - getDistance(duration)) / 2;
+  }
+
+  //Activate motor for pulley sonar system
+  digitalWrite(MOTOR_PIN, 160);
+
+  //Radius output
   lcd.print("Radius: ");
   lcd.print(radius);
-  delay(3000);
+  delay(200);
 
   //Volume output
   lcd.clear();
