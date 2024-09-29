@@ -5,7 +5,8 @@
 #define ECHO_PIN 10
 #define DISTANCE_BOUND 30
 
-double duration, radius;
+double duration, radius, volume; 
+double height = 0;
 const int rs = 12, en = 11, d4 = 5, d5 = 4, d6 = 3, d7 = 2;
 LiquidCrystal lcd(rs, en, d4, d5, d6, d7);
 
@@ -47,6 +48,9 @@ void loop() {
   Serial.println(radius);
   lcd.print("Radius: ");
   lcd.print(radius);
-
-  delay(2000);
+  delay(3000);
+  lcd.clear();
+  volume = (M_PI * pow(radius, 2) * 2);
+  lcd.print("Volume: ");
+  lcd.print(volume);
 }
