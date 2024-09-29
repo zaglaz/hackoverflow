@@ -42,6 +42,7 @@ void loop() {
   delayMicroseconds(10);
   digitalWrite(TRIG_PIN, LOW);
   
+  //Radius output
   duration = pulseIn(ECHO_PIN, HIGH);
   radius = (DISTANCE_BOUND - getDistance(duration)) / 2;
   Serial.println(getDistance(duration));
@@ -49,6 +50,8 @@ void loop() {
   lcd.print("Radius: ");
   lcd.print(radius);
   delay(3000);
+
+  //Volume output
   lcd.clear();
   volume = (M_PI * pow(radius, 2) * 2);
   lcd.print("Volume: ");
