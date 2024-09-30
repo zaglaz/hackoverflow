@@ -80,6 +80,7 @@ void loop() {
       timeMoved = 0;
       break;
     }
+    analogWrite(motorPin, 80);
   }
   delay(2000);
 
