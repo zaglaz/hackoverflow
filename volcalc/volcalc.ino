@@ -4,7 +4,7 @@
 #define TRIG_PIN 6
 #define ECHO_PIN 9
 #define MOTOR_PIN 8
-#define VELOCITY 1
+#define VELOCITY 0.1
 #define DISTANCE_BOUND 30
 
 double duration, radius, volume, height; 
